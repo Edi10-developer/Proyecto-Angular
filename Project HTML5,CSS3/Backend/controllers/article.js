@@ -227,7 +227,7 @@ var controller = {
 
         //Recoger el fichero de la peticion
         var file_name = 'Imagen no subida..';
-        if(req.files){
+        if(!req.files){
             return res.status(404).send({
                 status:'error',
                 message: file_name
@@ -265,7 +265,7 @@ var controller = {
 
             if(articleId){
              //Buscar el articulo, asignarle el nombre de la imagen y actualizarlo
-            Article.findByIdAndUpdate({_id: articleId}, {image: file_name}, {new:true}, (err, articleUpdated) => {
+            Article.findOneAndUpdate({_id: articleId}, {image: file_name}, {new:true}, (err, articleUpdated) => {
             
                 if (err || !articleUpdated){
                     return res.status(200).send({
@@ -278,6 +278,8 @@ var controller = {
               article: articleUpdated
             });
             });
+        
+
 
         }else{
             return res.status(200).send({
@@ -295,14 +297,14 @@ var controller = {
                 var path_file = './upload/articles/'+ file;
 
                 fs.exists(path_file, (exists)=> {
-                    console.log(exists);
-                    if(exist){
+                   // console.log(exists);
+                    if(exists){
                         return res.sendFile(path.resolve(path_file));
                     }else{
                         return res.status(404).send({
                             status:'error',
                             message:'La imagen no existe'
-                          });
+                          }); 
                     }
                 });
             },

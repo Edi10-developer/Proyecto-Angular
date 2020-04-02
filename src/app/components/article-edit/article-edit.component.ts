@@ -5,18 +5,19 @@ import { ArticleService } from '../../services/article.service';
 import { NgSelectOption } from '@angular/forms';
 import { Global } from '../../services/global';
 
+
 @Component({
-  selector: 'app-article-new',
-  templateUrl: './article-new.component.html',
-  styleUrls: ['./article-new.component.css'],
+  selector: 'app-article-edit',
+  templateUrl: '../article-new/article-new.component.html',
+  styleUrls: ['./article-edit.component.css'],
   providers: [ArticleService]
 })
-export class ArticleNewComponent implements OnInit {
-
+export class ArticleEditComponent implements OnInit {
+ 
   public article: Article;
   public status: string;
-  public page_title: string;
   public is_edit: boolean;
+  public page_title: string;
   public url: string;
 
   afuConfig = {
@@ -24,13 +25,13 @@ export class ArticleNewComponent implements OnInit {
     formatsAllowed: ".jpg, .png, .gif, .jpeg",
     maxSize: "50",
     uploadAPI: {
-      url: Global.url +'upload-image/'
+      url: Global.url + 'upload-image/'
     },
     theme: "attachPin",
     hideProgressBar: true,
     hideResetBtn: true,
-    hideSelectBtn: false,  
-      replaceTexts: {
+    hideSelectBtn: false,
+    replaceTexts: {
       selectFileBtn: 'Select Files',
       resetBtn: 'Reset',
       uploadBtn: 'Upload',
@@ -38,30 +39,31 @@ export class ArticleNewComponent implements OnInit {
       attachPinBtn: 'Sube tu imagen para el articulo...',
       afterUploadMsg_success: 'Successfully Uploaded !',
       afterUploadMsg_error: 'Upload Failed !'
-  }
+    }
   };
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,
-    private _articleService: ArticleService,
-    
+    private _articleService: ArticleService
   ) {
     this.article = new Article('', '', '', null, null);
-    this.page_title = 'Crear articulo';
     this.is_edit = true;
+    this.page_title = 'Editar articulo';
     this.url = Global.url;
   }
-
+ 
   ngOnInit() {
+    this.getArticle();
   }
 
   onSubmit() {
-    this._articleService.create(this.article).subscribe(
+    this._articleService.update(this.article._id, this.article).subscribe(
       response => {
         if (response.status == 'success') {
           this.status = 'success';
           this.article = response.article;
-          this._router.navigate(['/blog']);
+
+          this._router.navigate(['/blog/articulo', this.article._id]);
         } else {
           this.status = 'error'
         }
@@ -77,6 +79,27 @@ export class ArticleNewComponent implements OnInit {
   imageUpload(data) {
     let image_data = JSON.parse(data.response);
     this.article.image = image_data.image;
+
   }
 
+  getArticle() {
+    this._route.params.subscribe(params => {
+      let id = params['id'];
+
+      this._articleService.getArticle(id).subscribe(
+        response => {
+          if (response.article) {
+            this.article = response.article;
+          } else {
+            this._router.navigate(['/home']);
+          }
+        },
+        error => {
+          console.log(error);
+          this._router.navigate(['/home']);
+        }
+      );
+    });
 }
+};
+
