@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
+import swal from 'sweetalert';
 import { Article } from '../../models/article';
 import { ArticleService } from '../../services/article.service';
 import { NgSelectOption } from '@angular/forms';
 import { Global } from '../../services/global';
+
 
 @Component({
   selector: 'app-article-new',
@@ -61,6 +63,14 @@ export class ArticleNewComponent implements OnInit {
         if (response.status == 'success') {
           this.status = 'success';
           this.article = response.article;
+
+          //Alerta
+          swal(
+            'Articulo creado!',
+            'El articulo se ha creado correctamente',
+            'success'
+          );
+
           this._router.navigate(['/blog']);
         } else {
           this.status = 'error'

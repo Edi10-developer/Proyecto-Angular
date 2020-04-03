@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
+import swal from 'sweetalert';
 import { Article } from '../../models/article';
 import { ArticleService } from '../../services/article.service';
 import { NgSelectOption } from '@angular/forms';
@@ -63,6 +64,14 @@ export class ArticleEditComponent implements OnInit {
           this.status = 'success';
           this.article = response.article;
 
+          //Alerta
+          swal(
+            'Articulo editado!',
+            'El articulo se ha editado correctamente',
+            'success'
+          );
+
+
           this._router.navigate(['/blog/articulo', this.article._id]);
         } else {
           this.status = 'error'
@@ -71,6 +80,12 @@ export class ArticleEditComponent implements OnInit {
       error => {
         console.log(error);
         this.status = 'error';
+         //Alerta
+         swal(
+          'Ediciòn fallida!',
+          'El articulo no se ha editado correctamente',
+          'error'
+        );
       }
     );
 
